@@ -13,6 +13,10 @@ jobs:
         with:
           terraform_version: 1.5.0
       - name: Terraform init
-        run: terraform -chdir=terraform init
+        run: |
+          terraform -chdir=terraform init \
+            -backend-config="bucket=${TF_STATE_BUCKET_NAME:-waf-assessment-terraform-state}" \
+            -backend-config="key=${TF_STATE_KEY:-waf-assessment-platform/terraform.tfstate}" \
+            -backend-config="region=${AWS_REGION:-us-east-1}"
       - name: Terraform plan
         run: terraform -chdir=terraform plan
