@@ -1,0 +1,41 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: app
+      POSTGRES_PASSWORD: pass
+      POSTGRES_DB: bedrock
+    volumes:
+      - db_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    ports:
+      - 5432:5432
+
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://app:pass@db:5432/bedrock
+      - AWS_REGION=us-east-1
+      - MODEL_ID=amazon.titan-text-bison
+    depends_on:
+      - db
+    command: ["python","-m","app.main"]
+
+  ingest:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    environment:
+      - DATABASE_URL=postgresql://app:pass@db:5432/bedrock
+    depends_on:
+      - db
+    volumes:
+      - ../data:/data:ro
+    command: ["python","scripts/ingest_pdf.py","/data/waf.pdf"]
+
+volumes:
+  db_data:
+    driver: local

@@ -1,0 +1,36 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "waf-assessment-platform"
+version = "0.1.0"
+description = "AWS Bedrock AgentCore runtime for automated Well-Architected Framework assessments."
+authors = [
+  { name = "AI Engineering Team" }
+]
+readme = "README.md"
+requires-python = ">=3.12"
+keywords = ["aws", "bedrock", "semantic-kernel", "well-architected", "assessment"]
+license = { text = "MIT" }
+classifiers = [
+  "Programming Language :: Python :: 3.12",
+  "License :: OSI Approved :: MIT License",
+  "Operating System :: OS Independent",
+]
+
+[project.dependencies]
+boto3 = ">=1.30.0"
+pydantic = ">=2.10.0"
+python-dotenv = ">=1.0.0"
+semantic-kernel = ">=1.44.0"
+ruff = ">=0.0.280"
+pytest = ">=8.0.0"
+
+[tool.ruff]
+line-length = 120
+select = ["E", "F", "W", "I", "S"]
+
+[tool.pytest.ini_options]
+minversion = "7.0"
+testpaths = ["tests"]

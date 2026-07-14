@@ -1,0 +1,10 @@
+aws_region = "us-east-1"
+service_name = "waf-assessment-platform"
+ecr_repository_name = "waf-assessment-agent-repo"
+artifact_bucket_name = "waf-assessment-artifacts"
+
+tags = {
+  Project = "WAF Assessment Platform"
+  Owner   = "AI Engineering"
+  Env     = "prod"
+}

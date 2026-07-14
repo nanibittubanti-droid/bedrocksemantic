@@ -1,0 +1,1 @@
+Service Agent: Recommend AWS services, protection controls, and deployment patterns that support the workload requirements and security posture.

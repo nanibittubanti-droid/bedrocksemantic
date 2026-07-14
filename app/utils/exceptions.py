@@ -1,0 +1,2 @@
+class AssessmentError(Exception):
+    pass
