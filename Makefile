@@ -20,7 +20,10 @@ docker-run:
 		waf-assessment-platform
 
 terraform-init:
-	terraform -chdir=terraform init
+	terraform -chdir=terraform init \
+		-backend-config="bucket=${TF_STATE_BUCKET_NAME:-waf-assessment-terraform-state}" \
+		-backend-config="key=${TF_STATE_KEY:-waf-assessment-platform/terraform.tfstate}" \
+		-backend-config="region=${AWS_REGION:-us-east-1}"
 
 terraform-plan:
 	terraform -chdir=terraform plan
