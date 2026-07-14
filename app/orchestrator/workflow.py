@@ -2,6 +2,7 @@ import logging
 import uuid
 from typing import Dict
 
+import app.observability as observability
 from app.agents.pillar_agent import PillarAgent
 from app.agents.recommendation_engine import RecommendationEngine
 from app.agents.service_agent import ServiceAgent
@@ -31,18 +32,22 @@ class WorkflowOrchestrator:
         )
 
     def orchestrate(self, request: AssessmentRequest) -> AssessmentResponse:
-        system_summary = self.system_agent.assess(request)
-        pillar_results = self.pillar_agent.assess(request, system_summary)
-        pillar_summary = self._summarize_pillars(pillar_results)
-        workload_summary = self.workload_agent.assess(request, pillar_summary)
-        service_summary = self.service_agent.assess(request, workload_summary)
-        recommendation_output = self.recommendation_engine.assess(
-            request,
-            system_summary,
-            pillar_summary,
-            workload_summary,
-            service_summary,
-        )
+        with observability.tracer.start_as_current_span(
+            "workflow.orchestrate",
+            attributes={"request_id": request.request_id},
+        ):
+            system_summary = self.system_agent.assess(request)
+            pillar_results = self.pillar_agent.assess(request, system_summary)
+            pillar_summary = self._summarize_pillars(pillar_results)
+            workload_summary = self.workload_agent.assess(request, pillar_summary)
+            service_summary = self.service_agent.assess(request, workload_summary)
+            recommendation_output = self.recommendation_engine.assess(
+                request,
+                system_summary,
+                pillar_summary,
+                workload_summary,
+                service_summary,
+            )
 
         recommendations = [
             Recommendation(

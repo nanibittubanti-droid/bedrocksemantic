@@ -1,1 +1,1 @@
-"""Service package for Bedrock assessment platform.""
+"""Service package for Bedrock assessment platform."""

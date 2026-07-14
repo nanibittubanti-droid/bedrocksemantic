@@ -50,25 +50,38 @@ module "networking" {
 module "kms" {
   source = "./modules/kms"
 
-  alias_name = "alias/${var.service_name}"
+  alias_name  = "alias/${var.service_name}"
   description = "KMS key for ${var.service_name}"
-  tags       = var.tags
+  tags        = var.tags
 }
 
 module "cloudwatch" {
   source = "./modules/cloudwatch"
 
-  log_group_name = "/aws/${var.service_name}/application"
-  tags           = var.tags
+  log_group_name   = "/aws/${var.service_name}/application"
+  metric_name      = "ApplicationErrorCount"
+  metric_namespace = "BedrockAgent"
+  tags             = var.tags
+}
+
+module "monitoring" {
+  source = "./modules/monitoring"
+
+  alarm_name        = "${var.service_name}-application-error-alarm"
+  metric_name       = "ApplicationErrorCount"
+  namespace         = "BedrockAgent"
+  threshold         = 5
+  alarm_description = "Alert when the application error metric exceeds threshold"
+  tags              = var.tags
 }
 
 module "secrets" {
   source = "./modules/secrets"
 
-  secret_name = "${var.service_name}/api-key"
-  description = "Runtime API secret for ${var.service_name}"
+  secret_name   = "${var.service_name}/api-key"
+  description   = "Runtime API secret for ${var.service_name}"
   secret_string = "changeme"
-  tags         = var.tags
+  tags          = var.tags
 }
 
 resource "awscc_bedrockagentcore_runtime" "this" {
@@ -104,6 +117,11 @@ output "kms_key_arn" {
 output "cloudwatch_log_group" {
   description = "CloudWatch log group for runtime logs."
   value       = module.cloudwatch.log_group_name
+}
+
+output "monitoring_alarm_arn" {
+  description = "CloudWatch alarm ARN for application error monitoring."
+  value       = module.monitoring.alarm_arn
 }
 
 output "secret_arn" {

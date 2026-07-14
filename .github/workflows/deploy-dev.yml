@@ -12,6 +12,9 @@ jobs:
     env:
       AWS_REGION: us-east-1
       ECR_REPOSITORY: waf-assessment-agent-repo-dev
+      OTEL_EXPORTER_OTLP_ENDPOINT: ${{ secrets.OTEL_EXPORTER_OTLP_ENDPOINT }}
+      OTEL_SERVICE_NAME: waf-assessment-platform-dev
+      OTEL_ENVIRONMENT: dev
     steps:
       - uses: actions/checkout@v4
 

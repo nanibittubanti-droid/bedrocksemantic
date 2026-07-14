@@ -8,11 +8,11 @@ module "ecr" {
 module "iam" {
   source = "../iam"
 
-  role_name         = var.role_name
-  policy_name       = var.policy_name
+  role_name          = var.role_name
+  policy_name        = var.policy_name
   policy_description = var.policy_description
-  policy_json       = var.policy_json
-  tags              = var.tags
+  policy_json        = var.policy_json
+  tags               = var.tags
 }
 
 module "networking" {
@@ -28,9 +28,9 @@ module "networking" {
 module "kms" {
   source = "../kms"
 
-  alias_name = "alias/${var.service_name}"
+  alias_name  = "alias/${var.service_name}"
   description = "KMS key for ${var.service_name}"
-  tags       = var.tags
+  tags        = var.tags
 }
 
 module "cloudwatch" {
@@ -43,21 +43,21 @@ module "cloudwatch" {
 module "monitoring" {
   source = "../monitoring"
 
-  alarm_name         = "${var.service_name}-high-error-rate"
-  metric_name        = "Errors"
-  namespace          = "AWS/Logs"
-  threshold          = 5
-  alarm_description  = "Alarm for ${var.service_name} errors"
-  dimensions         = { LogGroupName = module.cloudwatch.log_group_name }
-  tags               = var.tags
+  alarm_name        = "${var.service_name}-high-error-rate"
+  metric_name       = "Errors"
+  namespace         = "AWS/Logs"
+  threshold         = 5
+  alarm_description = "Alarm for ${var.service_name} errors"
+  dimensions        = { LogGroupName = module.cloudwatch.log_group_name }
+  tags              = var.tags
 }
 
 module "secrets" {
   source = "../secrets"
 
-  secret_name = "${var.service_name}/api-key"
-  description = "API key for ${var.service_name}"
+  secret_name   = "${var.service_name}/api-key"
+  description   = "API key for ${var.service_name}"
   secret_string = var.secret_value
-  tags         = var.tags
+  tags          = var.tags
 }
 
