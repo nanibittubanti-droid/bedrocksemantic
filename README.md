@@ -75,7 +75,7 @@ terraform -chdir=terraform init -backend=false
 terraform -chdir=terraform validate
 ```
 
-If you want a plan, you will need backend access and credentials:
+If you want a plan against a real S3 backend, you will need backend access and credentials:
 
 ```bash
 terraform -chdir=terraform init \
@@ -84,6 +84,12 @@ terraform -chdir=terraform init \
   -backend-config="region=us-east-1"
 
 terraform -chdir=terraform plan
+```
+
+If you are only validating locally or want the workflow to be less strict, you can use local initialization instead:
+
+```bash
+terraform -chdir=terraform init -backend=false
 ```
 
 ## GitHub Actions workflow testing
@@ -110,8 +116,9 @@ The workflow will:
 
 1. Configure AWS credentials
 2. Build and push the Docker image to ECR
-3. Initialize Terraform with the S3 backend
-4. Apply the Terraform stack for the dev environment
+3. Initialize Terraform with the S3 backend when backend settings are available
+4. Fall back to local initialization when backend credentials are missing
+5. Apply the Terraform stack for the dev environment
 
 ### Suggested GitHub Actions environment values
 

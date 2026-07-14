@@ -22,6 +22,12 @@ variable "artifact_bucket_name" {
   default     = "waf-assessment-artifacts"
 }
 
+variable "ecr_image_uri" {
+  description = "Full ECR image URI for the Bedrock AgentCore runtime."
+  type        = string
+  default     = ""
+}
+
 variable "tags" {
   description = "Tags to apply to all resources."
   type        = map(string)
