@@ -180,3 +180,5 @@ If you add integration tests that require AWS credentials (Bedrock) or a running
 - `DATABASE_URL` — connection string for Postgres when running integration tests that require DB access. For CI, prefer a dedicated test DB or run Postgres via services in the workflow.
 
 When running integrations in CI, ensure the workflow creates transient infrastructure (containers) and tears them down after tests. Don't store production credentials in CI; use short-lived credentials or role-based access where possible.
+
+# bedrocksemantic
