@@ -166,6 +166,19 @@ terraform -chdir=terraform apply -auto-approve
 terraform -chdir=terraform destroy -auto-approve
 ```
 
+## Observability
+
+This application is instrumented with OpenTelemetry for traces and metrics. The runtime exports telemetry to the OTLP endpoint configured by `OTEL_EXPORTER_OTLP_ENDPOINT`.
+
+Environment variables supported for observability:
+
+- `OTEL_EXPORTER_OTLP_ENDPOINT` — OTLP collector endpoint for traces and metrics
+- `OTEL_SERVICE_NAME` — service name used in trace and metric resource attributes
+- `OTEL_ENVIRONMENT` — deployment environment used in trace metadata
+- `LOG_FORMAT` — `plain` or `json` output for structured logs
+
+When `OTEL_EXPORTER_OTLP_ENDPOINT` is not configured, the runtime uses console span and metric exporters for local testing.
+
 ## Troubleshooting
 
 - `Invalid configuration` means environment variables are missing or malformed.

@@ -16,10 +16,10 @@ provider "aws" {
 module "app" {
   source = "../../"
 
-  aws_region            = var.aws_region
-  service_name          = var.service_name
-  ecr_repository_name   = var.ecr_repository_name
-  artifact_bucket_name  = var.artifact_bucket_name
-  tags                  = merge(var.tags, { Environment = "qa" })
-  state_bucket_name     = var.state_bucket_name
+  aws_region           = var.aws_region
+  service_name         = var.service_name
+  ecr_repository_name  = var.ecr_repository_name
+  artifact_bucket_name = var.artifact_bucket_name
+  tags                 = merge(var.tags, { Environment = "qa" })
+  state_bucket_name    = var.state_bucket_name
 }

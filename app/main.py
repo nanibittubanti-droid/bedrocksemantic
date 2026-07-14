@@ -8,6 +8,7 @@ from app.config import load_config
 from app.kernel.kernel import SemanticKernelRuntime
 from app.logging_config import configure_logging
 from app.models.request import AssessmentRequest
+from app.observability import configure_observability
 from app.orchestrator.workflow import WorkflowOrchestrator
 from app.prompts.prompt_set import PromptSet
 from app.services.bedrock_service import BedrockService
@@ -38,7 +39,13 @@ def load_assessment_request() -> AssessmentRequest:
 
 def run() -> int:
     config = load_config()
-    configure_logging(config.log_level)
+    configure_logging(
+        config.log_level,
+        config.log_format,
+        config.service_name,
+        config.environment,
+    )
+    tracer, assessment_counter, error_counter = configure_observability(config)
     logger = logging.getLogger("app.main")
 
     try:
@@ -62,12 +69,18 @@ def run() -> int:
         request = load_assessment_request()
 
         logger.info("Running assessment workflow for request %s", request.request_id)
-        response = orchestrator.orchestrate(request)
+        with tracer.start_as_current_span(
+            "assessment.run",
+            attributes={"request_id": request.request_id, "service.name": config.service_name},
+        ):
+            response = orchestrator.orchestrate(request)
 
+        assessment_counter.add(1, {"status": "success", "service.name": config.service_name})
         print(response.model_dump_json(indent=2))
         return 0
     except Exception:
         logger.exception("Assessment execution failed")
+        error_counter.add(1, {"status": "failure", "service.name": config.service_name})
         return 1
 
 

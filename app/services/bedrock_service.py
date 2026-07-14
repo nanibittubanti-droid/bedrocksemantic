@@ -3,6 +3,7 @@ from typing import Any, Iterable
 
 from app.kernel.kernel import SemanticKernelRuntime
 from app.models.request import AssessmentRequest
+from app.observability import tracer
 from app.prompts.prompt_set import PromptSet
 from app.services.knowledgebase_service import KnowledgeBaseService
 
@@ -89,9 +90,17 @@ class BedrockService:
             retrieved_documents=knowledge_documents,
         )
         logger.info("Evaluating %s agent for request %s", agent_name, request.request_id)
+        with tracer.start_as_current_span(
+            f"agent.evaluate.{agent_name}",
+            attributes={
+                "agent.name": agent_name,
+                "request.id": request.request_id,
+                "service.name": self.kernel_runtime.config.service_name,
+            },
+        ):
+            result = self._kernel.run(agent_function, prompt)
+            output = getattr(result, "output", str(result)).strip()
 
-        result = self._kernel.run(agent_function, prompt)
-        output = getattr(result, "output", str(result)).strip()
         logger.debug("Agent %s evaluation complete", agent_name)
         return output
 

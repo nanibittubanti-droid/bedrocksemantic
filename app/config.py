@@ -18,12 +18,17 @@ class Config:
     database_url: str
     embedding_model_id: str | None
     embedding_dim: int
+    otel_exporter_endpoint: str | None
+    otel_service_name: str
+    otel_environment: str
+    log_format: str
 
 
 def load_config() -> Config:
     aws_region = os.getenv("AWS_REGION", "us-east-1").strip()
     model_id = os.getenv("MODEL_ID", "amazon.titan-text-bison").strip()
     log_level = os.getenv("LOG_LEVEL", "INFO").strip().upper()
+    log_format = os.getenv("LOG_FORMAT", "plain").strip().lower()
     temperature = float(os.getenv("TEMPERATURE", "0.7"))
     max_tokens = int(os.getenv("MAX_TOKENS", "1024"))
     server_host = os.getenv("SERVER_HOST", "0.0.0.0").strip()
@@ -31,6 +36,9 @@ def load_config() -> Config:
     bedrock_endpoint = os.getenv("BEDROCK_ENDPOINT", "").strip() or None
     service_name = os.getenv("SERVICE_NAME", "waf-assessment-platform").strip()
     environment = os.getenv("ENVIRONMENT", "production").strip().lower()
+    otel_exporter_endpoint = os.getenv("OTEL_EXPORTER_OTLP_ENDPOINT", "").strip() or None
+    otel_service_name = os.getenv("OTEL_SERVICE_NAME", service_name).strip() or service_name
+    otel_environment = os.getenv("OTEL_ENVIRONMENT", environment).strip() or environment
     database_url = os.getenv("DATABASE_URL", "").strip()
     embedding_model_id = os.getenv("EMBEDDING_MODEL_ID", "").strip() or None
     embedding_dim = int(os.getenv("EMBEDDING_DIM", "1536"))
@@ -49,6 +57,8 @@ def load_config() -> Config:
         raise ValueError("MAX_TOKENS must be a positive integer")
     if server_port <= 0 or server_port > 65535:
         raise ValueError("SERVER_PORT must be a valid port number")
+    if log_format not in {"plain", "json"}:
+        raise ValueError('LOG_FORMAT must be either "plain" or "json"')
 
     return Config(
         aws_region=aws_region,
@@ -64,4 +74,8 @@ def load_config() -> Config:
         database_url=database_url,
         embedding_model_id=embedding_model_id,
         embedding_dim=embedding_dim,
+        otel_exporter_endpoint=otel_exporter_endpoint,
+        otel_service_name=otel_service_name,
+        otel_environment=otel_environment,
+        log_format=log_format,
     )
