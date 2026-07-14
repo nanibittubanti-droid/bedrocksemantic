@@ -36,11 +36,23 @@ jobs:
           docker push "${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest"
 
       - name: Terraform init
+        shell: bash
         run: |
-          terraform -chdir=terraform init \
-            -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_NAME }}" \
-            -backend-config="key=waf-assessment-platform-dev/terraform.tfstate" \
-            -backend-config="region=$AWS_REGION"
+          if [[ -n "${{ secrets.TF_STATE_BUCKET_NAME }}" && -n "${{ secrets.AWS_ACCESS_KEY_ID }}" ]]; then
+            terraform -chdir=terraform init \
+              -backend-config="bucket=${{ secrets.TF_STATE_BUCKET_NAME }}" \
+              -backend-config="key=waf-assessment-platform-dev/terraform.tfstate" \
+              -backend-config="region=$AWS_REGION"
+          else
+            echo "Terraform backend not configured; falling back to local initialization."
+            terraform -chdir=terraform init -backend=false
+          fi
 
       - name: Terraform apply
-        run: terraform -chdir=terraform apply -auto-approve -var="aws_region=$AWS_REGION" -var="service_name=waf-assessment-platform-dev" -var="ecr_repository_name=$ECR_REPOSITORY" -var="artifact_bucket_name=waf-assessment-artifacts-dev"
+        shell: bash
+        run: |
+          terraform -chdir=terraform apply -auto-approve \
+            -var="aws_region=$AWS_REGION" \
+            -var="service_name=waf-assessment-platform-dev" \
+            -var="ecr_repository_name=$ECR_REPOSITORY" \
+            -var="artifact_bucket_name=waf-assessment-artifacts-dev"
