@@ -19,6 +19,11 @@ variable "policy_json" {
   type        = string
 }
 
+variable "assume_role_policy" {
+  description = "JSON assume role policy document for the IAM role."
+  type        = string
+}
+
 variable "tags" {
   description = "Tags to apply to IAM resources."
   type        = map(string)

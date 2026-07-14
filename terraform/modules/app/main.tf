@@ -61,12 +61,3 @@ module "secrets" {
   tags         = var.tags
 }
 
-module "bedrock_agentcore" {
-  source = "../bedrock_agentcore"
-
-  agent_name    = var.service_name
-  description   = "Bedrock AgentCore agent for ${var.service_name}"
-  foundation_model = "anthropic.claude-3-sonnet-20240229-v1:0"
-  instruction   = "You are a helpful assistant for ${var.service_name}."
-  tags          = var.tags
-}

@@ -3,7 +3,7 @@ data "aws_iam_policy_document" "agent_assume_role_policy" {
     effect = "Allow"
     principals {
       type        = "Service"
-      identifiers = ["ecs-tasks.amazonaws.com"]
+      identifiers = ["bedrock-agentcore.amazonaws.com"]
     }
     actions = ["sts:AssumeRole"]
   }
@@ -24,6 +24,10 @@ data "aws_iam_policy_document" "agent_permissions_policy" {
       "logs:PutLogEvents",
       "bedrock:InvokeModel",
       "bedrock:ListModels",
+      "ecr:GetAuthorizationToken",
+      "ecr:BatchGetImage",
+      "ecr:GetDownloadUrlForLayer",
+      "ecr:BatchCheckLayerAvailability",
       "ssm:GetParameter",
       "secretsmanager:GetSecretValue",
     ]

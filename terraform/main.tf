@@ -4,10 +4,18 @@ terraform {
       source  = "hashicorp/aws"
       version = ">= 5.0.0"
     }
+    awscc = {
+      source  = "hashicorp/awscc"
+      version = ">= 1.0.0"
+    }
   }
 }
 
 provider "aws" {
+  region = var.aws_region
+}
+
+provider "awscc" {
   region = var.aws_region
 }
 
@@ -21,11 +29,12 @@ module "ecr" {
 module "iam" {
   source = "./modules/iam"
 
-  role_name         = "${var.service_name}-agent-execution-role"
-  policy_name       = "${var.service_name}-bedrock-agent-policy"
+  role_name          = "${var.service_name}-agent-execution-role"
+  policy_name        = "${var.service_name}-bedrock-agent-policy"
   policy_description = "Permissions required for Bedrock AgentCore runtime and assessment data access."
-  policy_json       = data.aws_iam_policy_document.agent_permissions_policy.json
-  tags              = var.tags
+  assume_role_policy = data.aws_iam_policy_document.agent_assume_role_policy.json
+  policy_json        = data.aws_iam_policy_document.agent_permissions_policy.json
+  tags               = var.tags
 }
 
 module "networking" {
@@ -62,6 +71,16 @@ module "secrets" {
   tags         = var.tags
 }
 
+resource "awscc_bedrockagentcore_runtime" "this" {
+  count = var.ecr_image_uri != "" ? 1 : 0
+
+  agent_runtime_name = "${var.service_name}-runtime"
+  description        = "Bedrock AgentCore runtime for ${var.service_name}"
+  role_arn           = module.iam.role_arn
+  image_uri          = var.ecr_image_uri
+  tags               = var.tags
+}
+
 output "ecr_repository_url" {
   description = "ECR repository URL for the Bedrock AgentCore container image."
   value       = module.ecr.repository_url
@@ -90,4 +109,14 @@ output "cloudwatch_log_group" {
 output "secret_arn" {
   description = "Secrets Manager secret ARN for runtime secrets."
   value       = module.secrets.secret_arn
+}
+
+output "agent_runtime_id" {
+  description = "The ID of the Bedrock AgentCore runtime."
+  value       = try(awscc_bedrockagentcore_runtime.this[0].agent_runtime_id, "")
+}
+
+output "agent_runtime_arn" {
+  description = "The ARN of the Bedrock AgentCore runtime."
+  value       = try(awscc_bedrockagentcore_runtime.this[0].agent_runtime_arn, "")
 }

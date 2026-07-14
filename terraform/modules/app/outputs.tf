@@ -33,7 +33,3 @@ output "secret_arn" {
   value       = module.secrets.secret_arn
 }
 
-output "bedrock_agent_id" {
-  description = "Bedrock AgentCore agent ID."
-  value       = module.bedrock_agentcore.agent_id
-}

@@ -55,4 +55,5 @@ jobs:
             -var="aws_region=$AWS_REGION" \
             -var="service_name=waf-assessment-platform-dev" \
             -var="ecr_repository_name=$ECR_REPOSITORY" \
-            -var="artifact_bucket_name=waf-assessment-artifacts-dev"
+            -var="artifact_bucket_name=waf-assessment-artifacts-dev" \
+            -var="ecr_image_uri=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.$AWS_REGION.amazonaws.com/$ECR_REPOSITORY:latest"
