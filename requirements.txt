@@ -1,0 +1,8 @@
+boto3>=1.30.0
+pydantic>=2.10.0
+python-dotenv>=1.0.0
+semantic-kernel>=1.44.0
+ruff>=0.0.280
+pytest>=8.0.0
+psycopg[binary]>=3.2
+pypdf>=3.0.0

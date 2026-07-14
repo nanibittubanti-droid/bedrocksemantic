@@ -1,0 +1,1 @@
+Cost Optimization Agent: Identify sizing, storage, reserved capacity, and waste reduction opportunities.

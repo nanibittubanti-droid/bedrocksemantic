@@ -1,0 +1,1 @@
+System Assessment Agent: Coordinate the overall architecture review and produce a high-level assessment that covers all pillars. Provide strategy, risk, and remediation guidance.

@@ -1,0 +1,1 @@
+Security Agent: Evaluate IAM, KMS, encryption, secrets, security group configuration, WAF, GuardDuty, and AWS security controls. Flag security gaps and propose remediation.
